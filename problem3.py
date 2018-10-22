@@ -14,7 +14,7 @@ if (__name__ == "__main__"):
     part1 = PartInABox(5, 0.01, 0.00001, 1) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
     part1.set_barrier(part1.L/50, 0.5)
     snap1 = Snapshot(part1)
-    snap1.filename = "partial_ref_and_trans.pdf"
+    snap1.filename = "partial_ref_and_trans"
 
     ###         ANIMATION       ###
     anim1 = Animation(part1, 10, 0.5, 60)  # Format: particle object, animation duration, real-life timeframe, fps

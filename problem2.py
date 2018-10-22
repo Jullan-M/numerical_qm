@@ -21,7 +21,7 @@ if (__name__ == "__main__"):
     part4 = PartInABox(5, 0.01, 0.00001, 2)
     snap4 = Snapshot(part4)
 
-    test = PartInABox(5, 0.001, 0.001, 1)
+    test = PartInABox(5, 0.01, 0.001, 1)
     snap5 = Snapshot(test)
     snap5.filename = "high_timestep_initial"
 

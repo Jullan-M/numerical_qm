@@ -25,6 +25,8 @@ class PartInABox:
         self.dt = dt
         self.dx = dx
         self.Nx = int(L / self.dx + 1)
+
+        ##  Constants used in Eq. (7a) and (7b).
         self.c1 = self.hbar * self.dt / (2*self.m*self.dx**2)
         self.c2 = self.dt / self.hbar
 
@@ -64,7 +66,6 @@ class PartInABox:
         self.imArrEven = self.norm_const * im
         self.rhoArr = self.norm_const**2 * abs_squared
         self.psiArr = self.reArrEven + 1j * self.imArrEven
-        #self.psitMat[0] = self.reArrEven + 1j * self.imArrEven
 
     def wave_func(self):
         self.psiArr = self.norm_const * np.exp(-(self.x - self.xs) ** 2 / (2 * self.sigmax ** 2)) * np.exp(1j * ( self.k0 * self.x - self.omega * self.t))
@@ -128,16 +129,21 @@ class PartInABox:
         self.tempArr += self.c2 * self.V * self.imArrEven
         self.reArrOdd = np.copy(self.tempArr)
 
-    #   Creates a barrier at L/2 with a width and height in factors of E.
-    def set_barrier(self, width, height):
-        n_half = int(width/self.dx/2)
-        n_midpoint = int(self.Nx/2)
-        self.V[n_midpoint-n_half:n_midpoint+n_half] = height * self.E
-        self.hasPotential = True
+    def set_barrier(self, width=None, height=None, V=None):
+        #   Creates a barrier with a given potential array V
+        if (width == None and height == None):
+            self.V = V
+            self.hasPotential = not np.equal(self.V,0).all()
+
+        #   Creates a barrier at L/2 with a width and height in factors of E.
+        elif (V == None):
+            n_half = int(width/self.dx/2)
+            n_midpoint = int(self.Nx/2)
+            self.V[n_midpoint-n_half:n_midpoint+n_half] = height * self.E
+            self.hasPotential = (height != 0)
 
     def reset(self):
         self.t = 0
-        self.V = np.zeros(self.Nx)
         self.wave_func()
         self.imArrEven = np.imag(self.psiArr)
         self.reArrEven = np.real(self.psiArr)
@@ -261,6 +267,7 @@ class Animation(Thread):
         # Set limits and labels for the axes
         self.ax1.set_xlim(left=0, right= part.L)
         self.ax1.set_ylim(bottom=-1, top=1)
+        self.ax1.grid()
 
         # Actually do the animation
         self.anim = animation.FuncAnimation(self.fig, self.animate, repeat=False, frames=int(self.fps * self.duration_irl),
@@ -326,16 +333,3 @@ class Snapshot:
 
     def update(self):
         self.filename = "qm_particle_xs=" + str(self.part.xs) + "_t=" + str(self.part.t-self.part.dt/2) + "_sigma=" + str(self.part.sigmax) + "_pot=" + str(self.part.hasPotential)
-
-
-
-if (__name__ == "__main__"):
-    part1 = PartInABox(5, 0.01, 0.00001, 1)
-    anim1 = Animation(part1, 10, 0.5, 60)
-    anims = [anim1]
-    save_animation = 1
-
-    if save_animation == 1:
-        for x in anims:
-            x.run()
-    plt.show()

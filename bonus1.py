@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 if (__name__ == "__main__"):
     #   1 - Save animation, 0 - Do not save
-    save_animation = 0
+    save_animation = 1
 
     free1 = PartFree(15, 0.01, 0.00001, 1) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
 
