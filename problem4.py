@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 
 if (__name__ == "__main__"):
     #   1 - Save animation, 0 - Do not save
-    part1 = PartInABox(5, 0.01, 0.00001, 1) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
+    part1 = PartInABox(5, 0.010005002, 0.00004, 1) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
 
     n_bar = 50
     ref_prob_arr = np.zeros(n_bar)
@@ -33,5 +33,5 @@ if (__name__ == "__main__"):
     plt.ylim(bottom=0, top=1)
     plt.legend()
     plt.grid()
-    plt.savefig("ref_and_trans_height_graph.pdf")
+    plt.savefig("p4_ref_vs_trans_height_graph.pdf")
     plt.show()

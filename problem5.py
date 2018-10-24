@@ -31,5 +31,5 @@ if (__name__ == "__main__"):
     plt.ylim(bottom=0, top=1)
     plt.legend()
     plt.grid()
-    plt.savefig("ref_and_trans_width_graph.pdf")
+    plt.savefig("p5_ref_vs_trans_width_graph.pdf")
     plt.show()

@@ -25,11 +25,12 @@ if (__name__ == "__main__"):
     ###         PLOTS           ###
     free1.jump_to_time(0.175)
     snap1 = Snapshot(free1)
+    snap1.filename = "b1_freepart_preteritum"
     snap1.show_wave_func()
     free1.jump_to_time(0.25)
-    snap1.update()
+    snap1.filename = "b1_freepart_present"
     snap1.show_wave_func()
     free1.jump_to_time(0.325)
-    snap1.update()
+    snap1.filename = "b1_freepart_future"
     snap1.show_wave_func()
 

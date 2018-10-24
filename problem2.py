@@ -21,7 +21,7 @@ if (__name__ == "__main__"):
     part4 = PartInABox(5, 0.01, 0.00001, 2)
     snap4 = Snapshot(part4)
 
-    test = PartInABox(5, 0.01, 0.001, 1)
+    test = PartInABox(5, 0.01, 0.0005, 1)
     snap5 = Snapshot(test)
     snap5.filename = "high_timestep_initial"
 
@@ -48,8 +48,11 @@ if (__name__ == "__main__"):
              snap4,
              snap5]
 
-    for snap in snaps:
-        snap.show_prob_density()
+    for i in range(4):
+        snaps[i].filename = "p2_sigma=" + str(snaps[i].part.sigmax) + "_before"
+        snaps[i].show_prob_density()
+        snaps[i].show_wave_func()
+    snaps[4].show_prob_density()
 
     if save_animation == 1:
         for anim in anims:
@@ -59,8 +62,9 @@ if (__name__ == "__main__"):
         part.jump_to_time(0.5)
 
     for i in range(4):
-        snaps[i].update()
+        snaps[i].filename = "p2_sigma=" + str(snaps[i].part.sigmax) + "_after"
         snaps[i].show_prob_density()
+        snaps[i].show_wave_func()
     snaps[4].filename = "high_timestep_after"
     snaps[4].show_prob_density()
 

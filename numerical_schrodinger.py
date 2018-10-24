@@ -6,9 +6,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
 
-
-
-
 class PartInABox:
     def __init__(self, xs, dx, dt, sigmax, hbar=1, m=1, k0=20, L=20):
         #   Constants
@@ -18,24 +15,24 @@ class PartInABox:
         self.L = L
         self.omega = self.k0**2*self.hbar / (2*self.m)
         self.norm_const = -1
-        self.vg = self.k0*self.hbar / self.m
         self.E = self.hbar * self.omega
 
         ##  Stepsizes and array sizes
         self.dt = dt
         self.dx = dx
-        self.Nx = int(L / self.dx + 1)
+        self.Nx = int(self.L / self.dx + 1)
 
         ##  Constants used in Eq. (7a) and (7b).
         self.c1 = self.hbar * self.dt / (2*self.m*self.dx**2)
         self.c2 = self.dt / self.hbar
 
         #   Initial values/arrays
+        self.xs = xs
         self.sigmax = sigmax
         self.V = np.zeros(self.Nx)
 
         #   Arrays which will update accordingly
-        self.x = np.linspace(0, 20, self.Nx)    #   Constant
+        self.x = np.linspace(0, self.L, self.Nx)    #   Constant
 
         self.imArrEven = np.zeros(self.Nx)
         self.reArrEven = np.zeros(self.Nx)
@@ -47,19 +44,22 @@ class PartInABox:
         self.tempArr = np.zeros(self.Nx)
 
         #   Values which will update accordingly
-        self.xs = xs
         self.t = 0
         self.hasPotential = False
 
+        #   These will normalize and calculate the initial values
+        #   for psi during the initialization of particle object.
         self.normalize()
         self.calc_initial_values()
 
     def normalize(self):
+        #   Normalizes the wave-function.
         not_normalized = np.exp( -(self.x - self.xs)**2 / ( 2 * self.sigmax**2 ) ) * np.exp( 1j * self.k0 * self.x )
         re = np.real(not_normalized)
         im = np.imag(not_normalized)
         abs_squared = re**2 + im**2
-        abs_squared_integrated = np.trapz(abs_squared, self.x)  #   Integrating |Psi|^2 using trapes method.
+        #   Integrating |Psi|^2 using trapes method since it already is included in the numpy library.
+        abs_squared_integrated = np.trapz(abs_squared, self.x)
 
         self.norm_const = 1 / np.sqrt(abs_squared_integrated)
         self.reArrEven = self.norm_const * re
@@ -68,9 +68,12 @@ class PartInABox:
         self.psiArr = self.reArrEven + 1j * self.imArrEven
 
     def wave_func(self):
+        #   Eq. (8) in the exercise description.
         self.psiArr = self.norm_const * np.exp(-(self.x - self.xs) ** 2 / (2 * self.sigmax ** 2)) * np.exp(1j * ( self.k0 * self.x - self.omega * self.t))
 
     def calc_initial_values(self):
+        #   Forcing the edges of the wave-function to be zero.
+        #   Effectively making this an particle in a box.
         self.imArrEven[0], self.imArrEven[self.Nx - 1] = 0, 0
         self.reArrEven[0], self.reArrEven[self.Nx - 1] = 0, 0
 
@@ -83,21 +86,12 @@ class PartInABox:
 
 
     def calc_next(self):
-        """ANALYTIC
-        self.t += self.dt
-        self.xs += self.vg*self.dt
-        self.wave_func()
-        self.reArrEven = np.real(self.psiArr)
-        self.imArrEven = np.imag(self.psiArr)
-        self.rhoArr = self.imArrEven ** 2 + self.reArrEven ** 2
-        """
-
-        #   EVEN
+        #   EVEN (t = 0, dt, 2dt, 3dt, ...)
         self.t += self.dt / 2
         self.calc_imArrEven()
         self.calc_reArrEven()
 
-        #   ODD
+        #   ODD (t = 1/2 dt, 3/2 dt, 5/2 dt, ...)
         self.t += self.dt / 2
         self.calc_imArrOdd()
         self.calc_reArrOdd()
@@ -130,7 +124,7 @@ class PartInABox:
         self.reArrOdd = np.copy(self.tempArr)
 
     def set_barrier(self, width=None, height=None, V=None):
-        #   Creates a barrier with a given potential array V
+        #   Creates a potential field with a given potential array V.
         if (width == None and height == None):
             self.V = V
             self.hasPotential = not np.equal(self.V,0).all()
@@ -143,6 +137,8 @@ class PartInABox:
             self.hasPotential = (height != 0)
 
     def reset(self):
+        #   This resets the whole object back to its initial conditions.
+        #   The potential V remains the same.
         self.t = 0
         self.wave_func()
         self.imArrEven = np.imag(self.psiArr)
@@ -158,6 +154,8 @@ class PartInABox:
         self.reArrOdd[0], self.reArrOdd[self.Nx - 1] = 0, 0
 
     def jump_to_time(self, time):
+        #   Function that jumps to a specific time.
+        #   Useful for snapshots, but should be used after rendering an animation.
         if (self.t > time):
             self.reset()
         while (self.t < time):
@@ -229,7 +227,6 @@ class PartFree(PartInABox):
 
     def reset(self):
         self.t = 0
-        self.V = np.zeros(self.Nx)
         self.wave_func()
         self.imArrEven = np.imag(self.psiArr)
         self.reArrEven = np.real(self.psiArr)
@@ -238,7 +235,6 @@ class PartFree(PartInABox):
         self.wave_func()
         self.imArrOdd = np.imag(self.psiArr)
         self.reArrOdd = np.real(self.psiArr)
-
 
 
 class Animation(Thread):
@@ -259,7 +255,7 @@ class Animation(Thread):
         self.line3, = self.ax1.plot([], [], lw=1.0, color='b', label=r"$|\Psi|^2$")
         self.line4, = self.ax1.plot([], [], lw=1.0, color='k', label=r"$V(x)$")
         self.lines = [self.line1, self.line2, self.line3]
-        #   Graphs potential
+        #   Plots potential (NOT in the same units at all)
         if self.part.hasPotential:
             self.line4.set_data(self.part.x, self.part.V/(1.5*self.part.E))
             self.lines.append(self.line4)
@@ -318,8 +314,8 @@ class Snapshot:
 
     def show_wave_func(self):
         plt.figure()
-        plt.plot(self.part.x, self.part.reArrEven, label=r"$\Psi_R$", color="g")
-        plt.plot(self.part.x, self.part.imArrEven, label=r"$\Psi_I$", color="m")
+        plt.plot(self.part.x, self.part.reArrEven, label=r"$\Psi_R$", color="g", linewidth=0.75)
+        plt.plot(self.part.x, self.part.imArrEven, label=r"$\Psi_I$", color="m", linewidth=0.75)
         if self.part.hasPotential:
             plt.plot(self.part.x, self.part.V / (1.5 * self.part.E), label=r"Potential", color="k")
         plt.xlabel(r"$x$", fontsize=16)
@@ -329,6 +325,22 @@ class Snapshot:
         plt.legend()
         plt.grid()
         plt.savefig(self.filename + "_wavefunc.pdf")
+        plt.show()
+
+    def show_both(self):
+        plt.figure()
+        plt.plot(self.part.x, self.part.reArrEven, label=r"$\Psi_R$", color="g", linewidth=0.75)
+        plt.plot(self.part.x, self.part.imArrEven, label=r"$\Psi_I$", color="m", linewidth=0.75)
+        plt.plot(self.part.x, self.part.rhoArr, label=r"Prob density, $\rho$", color="b")
+        if self.part.hasPotential:
+            plt.plot(self.part.x, self.part.V / (1.5 * self.part.E), label=r"Potential", color="k")
+        plt.xlabel(r"$x$", fontsize=16)
+        plt.ylabel(r"$\Psi_R$ / $\Psi_I$", fontsize=16)
+        plt.xlim(left=0, right=self.part.L)
+        plt.ylim(bottom=-1, top=1)
+        plt.legend()
+        plt.grid()
+        plt.savefig(self.filename + "_both.pdf")
         plt.show()
 
     def update(self):
