@@ -16,6 +16,8 @@ class PartInABox:
         self.omega = self.k0**2*self.hbar / (2*self.m)
         self.norm_const = -1
         self.E = self.hbar * self.omega
+        self.xs = xs
+        self.sigmax = sigmax
 
         ##  Stepsizes and array sizes
         self.dt = dt
@@ -26,13 +28,9 @@ class PartInABox:
         self.c1 = self.hbar * self.dt / (2*self.m*self.dx**2)
         self.c2 = self.dt / self.hbar
 
-        #   Initial values/arrays
-        self.xs = xs
-        self.sigmax = sigmax
-        self.V = np.zeros(self.Nx)
-
         #   Arrays which will update accordingly
         self.x = np.linspace(0, self.L, self.Nx)    #   Constant
+        self.V = np.zeros(self.Nx)
 
         self.imArrEven = np.zeros(self.Nx)
         self.reArrEven = np.zeros(self.Nx)
@@ -74,15 +72,15 @@ class PartInABox:
     def calc_initial_values(self):
         #   Forcing the edges of the wave-function to be zero.
         #   Effectively making this an particle in a box.
-        self.imArrEven[0], self.imArrEven[self.Nx - 1] = 0, 0
-        self.reArrEven[0], self.reArrEven[self.Nx - 1] = 0, 0
+        self.imArrEven[0], self.imArrEven[-1] = 0, 0
+        self.reArrEven[0], self.reArrEven[-1] = 0, 0
 
         self.t += self.dt/2
         self.wave_func()
         self.imArrOdd = np.imag(self.psiArr)
         self.reArrOdd = np.real(self.psiArr)
-        self.imArrOdd[0], self.imArrOdd[self.Nx - 1] = 0, 0
-        self.reArrOdd[0], self.reArrOdd[self.Nx - 1] = 0, 0
+        self.imArrOdd[0], self.imArrOdd[-1] = 0, 0
+        self.reArrOdd[0], self.reArrOdd[-1] = 0, 0
 
 
     def calc_next(self):
@@ -100,26 +98,26 @@ class PartInABox:
         self.psiArr = self.reArrEven + 1j * self.imArrEven
 
     def calc_imArrEven(self):
-        self.tempArr[1:self.Nx-1] = self.imArrEven[1:self.Nx-1] + self.c1 * (self.reArrOdd[2:self.Nx]
-                                    - 2 * self.reArrOdd[1:self.Nx-1] +  self.reArrOdd[0:self.Nx-2])
+        self.tempArr[1:-1] = self.imArrEven[1:-1] + self.c1 * (self.reArrOdd[2:]
+                                    - 2 * self.reArrOdd[1:-1] +  self.reArrOdd[:-2])
         self.tempArr -= self.c2 * self.V * self.reArrOdd
         self.imArrEven = np.copy(self.tempArr)
 
     def calc_reArrEven(self):
-        self.tempArr[1:self.Nx-1] = self.reArrEven[1:self.Nx-1] - self.c1 * (self.imArrOdd[2:self.Nx]
-                                    - 2 * self.imArrOdd[1:self.Nx-1] + self.imArrOdd[0:self.Nx-2])
+        self.tempArr[1:-1] = self.reArrEven[1:-1] - self.c1 * (self.imArrOdd[2:]
+                                    - 2 * self.imArrOdd[1:-1] + self.imArrOdd[:-2])
         self.tempArr += self.c2 * self.V * self.imArrOdd
         self.reArrEven = np.copy(self.tempArr)
 
     def calc_imArrOdd(self):
-        self.tempArr[1:self.Nx-1] = self.imArrOdd[1:self.Nx - 1] + self.c1 * (self.reArrEven[2:self.Nx]
-                                    - 2 * self.reArrEven[1:self.Nx - 1] + self.reArrEven[0:self.Nx - 2])
+        self.tempArr[1:-1] = self.imArrOdd[1:-1] + self.c1 * (self.reArrEven[2:]
+                                    - 2 * self.reArrEven[1:-1] + self.reArrEven[:-2])
         self.tempArr -= self.c2 * self.V * self.reArrEven
         self.imArrOdd = np.copy(self.tempArr)
 
     def calc_reArrOdd(self):
-        self.tempArr[1:self.Nx-1] = self.reArrOdd[1:self.Nx - 1] - self.c1 * (self.imArrEven[2:self.Nx]
-                                    - 2 * self.imArrEven[1:self.Nx - 1] + self.imArrEven[0:self.Nx - 2])
+        self.tempArr[1:-1] = self.reArrOdd[1:-1] - self.c1 * (self.imArrEven[2:]
+                                    - 2 * self.imArrEven[1:-1] + self.imArrEven[:-2])
         self.tempArr += self.c2 * self.V * self.imArrEven
         self.reArrOdd = np.copy(self.tempArr)
 
@@ -143,15 +141,15 @@ class PartInABox:
         self.wave_func()
         self.imArrEven = np.imag(self.psiArr)
         self.reArrEven = np.real(self.psiArr)
-        self.imArrEven[0], self.imArrEven[self.Nx - 1] = 0, 0
-        self.reArrEven[0], self.reArrEven[self.Nx - 1] = 0, 0
+        self.imArrEven[0], self.imArrEven[-1] = 0, 0
+        self.reArrEven[0], self.reArrEven[-1] = 0, 0
 
         self.t += self.dt / 2
         self.wave_func()
         self.imArrOdd = np.imag(self.psiArr)
         self.reArrOdd = np.real(self.psiArr)
-        self.imArrOdd[0], self.imArrOdd[self.Nx - 1] = 0, 0
-        self.reArrOdd[0], self.reArrOdd[self.Nx - 1] = 0, 0
+        self.imArrOdd[0], self.imArrOdd[-1] = 0, 0
+        self.reArrOdd[0], self.reArrOdd[-1] = 0, 0
 
     def jump_to_time(self, time):
         #   Function that jumps to a specific time.
@@ -186,42 +184,42 @@ class PartFree(PartInABox):
         self.psiArr = self.reArrEven + 1j * self.imArrEven
 
     def calc_imArrEven(self):
-        self.tempArr[1:self.Nx-1] = self.imArrEven[1:self.Nx-1] + self.c1 * (self.reArrOdd[2:self.Nx]
-                                    - 2 * self.reArrOdd[1:self.Nx-1] +  self.reArrOdd[0:self.Nx-2])
-        self.tempArr[self.Nx-1] = self.imArrEven[self.Nx-1] + self.c1 * (self.reArrOdd[0]
-                                    - 2 * self.reArrOdd[self.Nx-1] +  self.reArrOdd[self.Nx-2])
+        self.tempArr[1:-1] = self.imArrEven[1:-1] + self.c1 * (self.reArrOdd[2:]
+                                    - 2 * self.reArrOdd[1:-1] +  self.reArrOdd[:-2])
+        self.tempArr[-1] = self.imArrEven[-1] + self.c1 * (self.reArrOdd[0]
+                                    - 2 * self.reArrOdd[-1] +  self.reArrOdd[-2])
         self.tempArr[0] = self.imArrEven[0] + self.c1 * (self.reArrOdd[1]
-                                    - 2 * self.reArrOdd[0] + self.reArrOdd[self.Nx-1])
+                                    - 2 * self.reArrOdd[0] + self.reArrOdd[-1])
         self.tempArr -= self.c2 * self.V * self.reArrOdd
         self.imArrEven = np.copy(self.tempArr)
 
     def calc_reArrEven(self):
-        self.tempArr[1:self.Nx-1] = self.reArrEven[1:self.Nx-1] - self.c1 * (self.imArrOdd[2:self.Nx]
-                                    - 2 * self.imArrOdd[1:self.Nx-1] + self.imArrOdd[0:self.Nx-2])
-        self.tempArr[self.Nx - 1] = self.reArrEven[self.Nx - 1] - self.c1 * (self.imArrOdd[0]
-                                    - 2 * self.imArrOdd[self.Nx - 1] + self.imArrOdd[self.Nx - 2])
+        self.tempArr[1:-1] = self.reArrEven[1:-1] - self.c1 * (self.imArrOdd[2:]
+                                    - 2 * self.imArrOdd[1:-1] + self.imArrOdd[:-2])
+        self.tempArr[-1] = self.reArrEven[-1] - self.c1 * (self.imArrOdd[0]
+                                    - 2 * self.imArrOdd[-1] + self.imArrOdd[-2])
         self.tempArr[0] = self.reArrEven[0] - self.c1 * (self.imArrOdd[1]
-                                    - 2 * self.imArrOdd[0] + self.imArrOdd[self.Nx - 1])
+                                    - 2 * self.imArrOdd[0] + self.imArrOdd[-1])
         self.tempArr += self.c2 * self.V * self.imArrOdd
         self.reArrEven = np.copy(self.tempArr)
 
     def calc_imArrOdd(self):
-        self.tempArr[1:self.Nx-1] = self.imArrOdd[1:self.Nx - 1] + self.c1 * (self.reArrEven[2:self.Nx]
-                                    - 2 * self.reArrEven[1:self.Nx - 1] + self.reArrEven[0:self.Nx - 2])
-        self.tempArr[self.Nx - 1] = self.imArrOdd[self.Nx - 1] + self.c1 * (self.reArrEven[0]
-                                    - 2 * self.reArrEven[self.Nx - 1] + self.reArrEven[self.Nx - 2])
+        self.tempArr[1:-1] = self.imArrOdd[1:-1] + self.c1 * (self.reArrEven[2:]
+                                    - 2 * self.reArrEven[1:-1] + self.reArrEven[:-2])
+        self.tempArr[-1] = self.imArrOdd[-1] + self.c1 * (self.reArrEven[0]
+                                    - 2 * self.reArrEven[-1] + self.reArrEven[-2])
         self.tempArr[0] = self.imArrOdd[0] + self.c1 * (self.reArrEven[1]
-                                    - 2 * self.reArrEven[0] + self.reArrEven[self.Nx - 1])
+                                    - 2 * self.reArrEven[0] + self.reArrEven[-1])
         self.tempArr -= self.c2 * self.V * self.reArrEven
         self.imArrOdd = np.copy(self.tempArr)
 
     def calc_reArrOdd(self):
-        self.tempArr[1:self.Nx-1] = self.reArrOdd[1:self.Nx - 1] - self.c1 * (self.imArrEven[2:self.Nx]
-                                    - 2 * self.imArrEven[1:self.Nx - 1] + self.imArrEven[0:self.Nx - 2])
-        self.tempArr[self.Nx - 1] = self.reArrOdd[self.Nx - 1] - self.c1 * (self.imArrEven[0]
-                                    - 2 * self.imArrEven[self.Nx - 1] + self.imArrEven[self.Nx - 2])
+        self.tempArr[1:-1] = self.reArrOdd[1:-1] - self.c1 * (self.imArrEven[2:]
+                                    - 2 * self.imArrEven[1:-1] + self.imArrEven[:-2])
+        self.tempArr[-1] = self.reArrOdd[-1] - self.c1 * (self.imArrEven[0]
+                                    - 2 * self.imArrEven[-1] + self.imArrEven[-2])
         self.tempArr[0] = self.reArrOdd[0] - self.c1 * (self.imArrEven[1]
-                                    - 2 * self.imArrEven[0] + self.imArrEven[self.Nx - 1])
+                                    - 2 * self.imArrEven[0] + self.imArrEven[-1])
         self.tempArr += self.c2 * self.V * self.imArrEven
         self.reArrOdd = np.copy(self.tempArr)
 
@@ -297,6 +295,7 @@ class Snapshot:
     def __init__(self, part):
         self.part = part
         self.filename = "qm_particle_xs=" + str(self.part.xs) + "_t=" + str(self.part.t-self.part.dt/2) + "_sigma=" + str(self.part.sigmax) + "_pot=" + str(self.part.hasPotential)
+        self.save_fig = True
 
     def show_prob_density(self):
         plt.figure()
@@ -309,7 +308,8 @@ class Snapshot:
         plt.ylim(bottom=0, top = 1)
         plt.legend()
         plt.grid()
-        plt.savefig(self.filename + "_probdens.pdf")
+        if self.save_fig:
+            plt.savefig(self.filename + "_probdens.pdf")
         plt.show()
 
     def show_wave_func(self):
@@ -324,7 +324,8 @@ class Snapshot:
         plt.ylim(bottom=-1, top=1)
         plt.legend()
         plt.grid()
-        plt.savefig(self.filename + "_wavefunc.pdf")
+        if self.save_fig:
+            plt.savefig(self.filename + "_wavefunc.pdf")
         plt.show()
 
     def show_both(self):
@@ -340,8 +341,21 @@ class Snapshot:
         plt.ylim(bottom=-1, top=1)
         plt.legend()
         plt.grid()
-        plt.savefig(self.filename + "_both.pdf")
+        if self.save_fig:
+            plt.savefig(self.filename + "_both.pdf")
         plt.show()
 
     def update(self):
         self.filename = "qm_particle_xs=" + str(self.part.xs) + "_t=" + str(self.part.t-self.part.dt/2) + "_sigma=" + str(self.part.sigmax) + "_pot=" + str(self.part.hasPotential)
+
+if (__name__ == "__main__"):
+    part1 = PartInABox(5, 0.01, 0.00001, 1.5)
+    part1.set_barrier(part1.L/50, 1.1)
+    part1.jump_to_time(0.5)
+    plt.figure()
+    plt.plot(part1.x, part1.reArrEven, color="g", linewidth=0.75)
+    plt.plot(part1.x, part1.imArrEven, color="m", linewidth=0.75)
+    plt.xlim(left=0, right=part1.L)
+    plt.axis("off")
+    plt.savefig("front_page.pdf", bbox_inches='tight')
+    plt.show()

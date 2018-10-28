@@ -17,7 +17,7 @@ if (__name__ == "__main__"):
     snap1.filename = "p3_ref_and_trans"
 
     ###         ANIMATION       ###
-    anim1 = Animation(part1, 10, 0.5, 60)  # Format: particle object, animation duration, real-life timeframe, fps
+    anim1 = Animation(part1, 11, 0.55, 60)  # Format: particle object, animation duration, real-life timeframe, fps
 
     anims = [anim1]
 
@@ -28,10 +28,11 @@ if (__name__ == "__main__"):
     plt.show()
 
     ###         PLOTS           ###
-    part1.jump_to_time(0.5)
+    part1.jump_to_time(0.55)
     snap1.show_wave_func()
     snap1.show_prob_density()
     ref_prob = np.trapz(part1.rhoArr[:int(part1.Nx / 2)], dx=part1.dx)
+    trans_prob_int = np.trapz(part1.rhoArr[int(part1.Nx / 2):], dx=part1.dx)
     trans_prob = 1-ref_prob
     print("Reflection probability =\t", ref_prob)
-    print("Transmission probability =\t", trans_prob)
+    print("Transmission probability =\t", trans_prob, "\t exact =", trans_prob_int)
