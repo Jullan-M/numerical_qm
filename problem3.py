@@ -11,8 +11,8 @@ if (__name__ == "__main__"):
     #   1 - Save animation, 0 - Do not save
     save_animation = 1
 
-    part1 = PartInABox(5, 0.01, 0.00001, 1) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
-    part1.set_barrier(part1.L/50, 0.5)
+    part1 = PartInABox(5, 0.01, 0.00001, 1.5) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
+    part1.set_barrier(part1.L/50, 0.5) # 0.8457874312 - lowest reflection prob
     snap1 = Snapshot(part1)
     snap1.filename = "p3_ref_and_trans"
 
@@ -32,7 +32,6 @@ if (__name__ == "__main__"):
     snap1.show_wave_func()
     snap1.show_prob_density()
     ref_prob = np.trapz(part1.rhoArr[:int(part1.Nx / 2)], dx=part1.dx)
-    trans_prob_int = np.trapz(part1.rhoArr[int(part1.Nx / 2):], dx=part1.dx)
     trans_prob = 1-ref_prob
     print("Reflection probability =\t", ref_prob)
-    print("Transmission probability =\t", trans_prob, "\t exact =", trans_prob_int)
+    print("Transmission probability =\t", trans_prob)

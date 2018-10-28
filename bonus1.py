@@ -9,7 +9,7 @@ if (__name__ == "__main__"):
     #   1 - Save animation, 0 - Do not save
     save_animation = 1
 
-    free1 = PartFree(15, 0.01, 0.00001, 1) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
+    free1 = PartFree(15, 0.01, 0.00001, 1.5) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
 
     ###         ANIMATION       ###
     anim1 = Animation(free1, 10, 0.5, 60)  # Format: particle object, animation duration, real-life timeframe, fps

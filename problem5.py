@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 if (__name__ == "__main__"):
     #   1 - Save animation, 0 - Do not save
-    part1 = PartInABox(5, 0.010005002, 0.00004, 1.0)  # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
+    part1 = PartInABox(5, 0.0100050025, 0.00004, 1.5)  # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
     snap1 = Snapshot(part1)
     snap1.save_fig = False
 
