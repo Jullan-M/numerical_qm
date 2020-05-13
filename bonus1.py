@@ -1,6 +1,6 @@
 __author__ = 'Jullan'
 # -*- coding: utf-8 -*-
-#Made by Jullan
+# Made by Jullan
 from numerical_schrodinger import PartFree, Animation, Snapshot
 from matplotlib import pyplot as plt
 
@@ -9,10 +9,12 @@ if (__name__ == "__main__"):
     #   1 - Save animation, 0 - Do not save
     save_animation = 1
 
-    free1 = PartFree(15, 0.01, 0.00001, 1.5) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
+    # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
+    free1 = PartFree(15, 0.01, 0.00001, 1.5)
 
     ###         ANIMATION       ###
-    anim1 = Animation(free1, 10, 0.5, 60)  # Format: particle object, animation duration, real-life timeframe, fps
+    # Format: particle object, animation duration, real-life timeframe, fps
+    anim1 = Animation(free1, 10, 0.5, 60)
     anim1.filename = "free_particle.mp4"
     anims = [anim1]
 
@@ -33,4 +35,3 @@ if (__name__ == "__main__"):
     free1.jump_to_time(0.325)
     snap1.filename = "b1_freepart_future"
     snap1.show_wave_func()
-

@@ -1,6 +1,6 @@
 __author__ = 'Jullan'
 # -*- coding: utf-8 -*-
-#Made by Jullan
+# Made by Jullan
 
 from numerical_schrodinger import PartInABox
 import numpy as np
@@ -9,7 +9,8 @@ from matplotlib import pyplot as plt
 
 if (__name__ == "__main__"):
     #   1 - Save animation, 0 - Do not save
-    part1 = PartInABox(5, 0.010005002, 0.00004, 1.5) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
+    # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
+    part1 = PartInABox(5, 0.010005002, 0.00004, 1.5)
 
     n_bar = 50
     ref_prob_arr = np.zeros(n_bar)
@@ -18,7 +19,8 @@ if (__name__ == "__main__"):
         part1.reset()
         part1.set_barrier(part1.L/50, 3/2*(i+1)/n_bar)
         part1.jump_to_time(0.6)
-        ref_prob = np.trapz(part1.rhoArr[:int(part1.Nx / 2)], part1.x[:int(part1.Nx / 2)])
+        ref_prob = np.trapz(
+            part1.rhoArr[:int(part1.Nx / 2)], part1.x[:int(part1.Nx / 2)])
         ref_prob_arr[i] = ref_prob
 
     V0perE = np.linspace(1.5/n_bar, 1.5, n_bar)

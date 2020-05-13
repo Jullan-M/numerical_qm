@@ -1,6 +1,6 @@
 __author__ = 'Jullan'
 # -*- coding: utf-8 -*-
-#Made by Jullan
+# Made by Jullan
 from numerical_schrodinger import PartInABox, Animation, Snapshot
 from matplotlib import pyplot as plt
 
@@ -9,7 +9,8 @@ if (__name__ == "__main__"):
     #   1 - Save animation, 0 - Do not save
     save_animation = 1
 
-    part1 = PartInABox(5, 0.01, 0.00001, 0.5) # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
+    # Format: Start pos xs, stepsize dx, stepsize dt, sigmax
+    part1 = PartInABox(5, 0.01, 0.00001, 0.5)
     snap1 = Snapshot(part1)
 
     part2 = PartInABox(5, 0.01, 0.00001, 1)
@@ -25,7 +26,8 @@ if (__name__ == "__main__"):
     snap5 = Snapshot(test)
     snap5.filename = "high_timestep_initial"
 
-    anim1 = Animation(part1, 10, 0.5, 60)   #   Format: particle object, animation duration, real-life timeframe, fps
+    # Format: particle object, animation duration, real-life timeframe, fps
+    anim1 = Animation(part1, 10, 0.5, 60)
     anim2 = Animation(part2, 10, 0.5, 60)
     anim3 = Animation(part3, 10, 0.5, 60)
     anim4 = Animation(part4, 10, 0.5, 60)
